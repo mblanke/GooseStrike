@@ -1,0 +1,42 @@
+version: "3.9"
+
+x-goosestrike-service: &goosestrike-service
+  image: goosestrike-kali:latest
+  volumes:
+    - ./db:/opt/goosestrike/db
+    - ./logs:/opt/goosestrike/logs
+    - ./data:/opt/goosestrike/data
+  networks:
+    - goosenet
+
+services:
+  api:
+    <<: *goosestrike-service
+    build:
+      context: .
+      dockerfile: Dockerfile.kali
+    container_name: goosestrike_api
+    command: ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  scanner:
+    <<: *goosestrike-service
+    container_name: goosestrike_scanner
+    depends_on:
+      - api
+    command: ["sleep", "infinity"]
+    restart: unless-stopped
+
+  worker:
+    <<: *goosestrike-service
+    container_name: goosestrike_worker
+    depends_on:
+      - api
+    command: ["sleep", "infinity"]
+    restart: unless-stopped
+
+networks:
+  goosenet:
+    driver: bridge

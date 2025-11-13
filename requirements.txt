@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+requests
+pydantic
+pytest
+jinja2
