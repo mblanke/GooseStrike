@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GooseStrike Command Deck</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="canadian-flag" role="img" aria-label="Canadian flag motif"></div>
+    <div>
+      <h1>GooseStrike</h1>
+      <p>Canadian-themed, AI-assisted offensive security toolbox for authorized testing.</p>
+    </div>
+    <div class="goose-logo" role="img" aria-label="Uploaded GooseStrike logo">
+      <img src="{{ logo_url }}" alt="Uploaded GooseStrike logo" />
+    </div>
+  </header>
+
+  <main>
+    <section class="wide hero-panel" aria-label="GooseStrike Core overview">
+      <div class="hero-text">
+        <h2>GooseStrike Core (Docker-ready)</h2>
+        <ul class="hero-list">
+          <li>🔧 Nmap, Metasploit, SQLMap, Hydra, ZAP</li>
+          <li>🧠 AI exploit assistant (Claude, HackGPT-ready)</li>
+          <li>📚 Offline CVE mirroring with <code>update_cve.sh</code></li>
+          <li>🗂 ASCII banner, logo, branding kit (PDF)</li>
+          <li>📜 CVE scan + JSON match script</li>
+          <li>📦 <strong>goosestrike-cve-enabled.zip</strong> (download link)</li>
+          <li>🧠 <strong>hackgpt-ai-stack.zip</strong> with README + architecture</li>
+        </ul>
+        <div class="hero-meta">
+          <h3>Coming next (roadmap you requested)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>🐳 Build <code>docker-compose.goosestrike-full.yml</code></td>
+                <td>⏳ In progress</td>
+              </tr>
+              <tr>
+                <td>🧠 HackGPT API container (linked to n8n)</td>
+                <td>⏳ Next up</td>
+              </tr>
+              <tr>
+                <td>🌐 Local CVE API server</td>
+                <td>Pending</td>
+              </tr>
+              <tr>
+                <td>🧬 Claude + HackGPT fallback system</td>
+                <td>Pending</td>
+              </tr>
+              <tr>
+                <td>🔄 n8n workflow <code>.json</code> import</td>
+                <td>Pending</td>
+              </tr>
+              <tr>
+                <td>🎯 Target "prioritizer" AI agent</td>
+                <td>Pending</td>
+              </tr>
+              <tr>
+                <td>🧭 SVG architecture diagram</td>
+                <td>Pending</td>
+              </tr>
+              <tr>
+                <td>🖥 Dashboard frontend (Armitage-style)</td>
+                <td>Optional</td>
+              </tr>
+              <tr>
+                <td>🔐 C2 bridging to Mythic/Sliver</td>
+                <td>Optional</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="hero-visual" role="img" aria-label="GooseStrike crest render">
+        <div class="hero-visual-inner">
+          <img src="{{ spotlight_logo_url }}" alt="GooseStrike crest" />
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Assets &amp; Vulnerabilities</h2>
+      <div id="assets"></div>
+    </section>
+    <section>
+      <h2>Scan History</h2>
+      <div id="scans"></div>
+    </section>
+    <section>
+      <h2>MITRE ATT&amp;CK Suggestions</h2>
+      <div id="mitre"></div>
+    </section>
+    <section>
+      <h2>Task Queue</h2>
+      <div id="tasks"></div>
+    </section>
+    <section>
+      <h2>Alerts</h2>
+      <pre id="alerts">Waiting for n8n webhooks...</pre>
+    </section>
+    <section class="wide">
+      <h2>Queue Tool Task</h2>
+      <form id="task-form" class="card-form">
+        <div class="form-grid">
+          <label>
+            Tool
+            <input type="text" id="task-tool" list="tool-presets" placeholder="sqlmap" required />
+            <datalist id="tool-presets">
+              <option value="metasploit"></option>
+              <option value="sqlmap"></option>
+              <option value="hydra"></option>
+              <option value="zap"></option>
+              <option value="password_cracker"></option>
+              <option value="hashcat"></option>
+              <option value="john"></option>
+              <option value="rainbow"></option>
+            </datalist>
+          </label>
+          <label>
+            Target / Notes
+            <input type="text" id="task-target" placeholder="10.0.0.5:80" />
+          </label>
+        </div>
+        <label>
+          Params (JSON)
+          <textarea id="task-params" rows="4" placeholder='{"level": 3, "risk": 1}'></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="submit">Queue Task</button>
+          <span class="helper">Tasks land in db/tasks.db and runners pick them up.</span>
+        </div>
+        <div id="task-message" class="helper"></div>
+      </form>
+    </section>
+    <section class="wide">
+      <h2>Password Cracking Helper</h2>
+      <form id="password-form" class="card-form">
+        <div class="form-grid">
+          <label>
+            Cracking Tool
+            <select id="password-tool">
+              <option value="hashcat">Hashcat</option>
+              <option value="john">John the Ripper</option>
+              <option value="rainbow">Rainbow (rcrack)</option>
+            </select>
+          </label>
+          <label>
+            Target Label
+            <input type="text" id="password-target" placeholder="lab-hashes" />
+          </label>
+        </div>
+        <label>
+          Hash / Tables file
+          <input type="text" id="password-file" placeholder="/data/hashes.txt" required />
+        </label>
+        <label>
+          Wordlist / Mask / Hash value
+          <input type="text" id="password-wordlist" placeholder="/usr/share/wordlists/rockyou.txt or ?l?d?d?d" />
+        </label>
+        <label>
+          Extra options (JSON)
+          <textarea id="password-extra" rows="3" placeholder='{"mode": 0, "attack_mode": 0}'></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="submit">Queue Password Crack</button>
+          <span class="helper">Hashcat/John/Rainbow jobs reuse the password_cracker runner.</span>
+        </div>
+        <div id="password-message" class="helper"></div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    Built for red, grey, black, and white team operations. Use responsibly.
+  </footer>
+
+  <script>
+    async function fetchAssets() {
+      const response = await fetch('/assets');
+      const container = document.getElementById('assets');
+      if (!response.ok) {
+        container.innerText = 'Unable to load assets yet.';
+        return;
+      }
+      const assets = await response.json();
+      if (!assets.length) {
+        container.innerText = 'No assets ingested yet.';
+        return;
+      }
+      container.innerHTML = '';
+      assets.forEach(asset => {
+        const card = document.createElement('article');
+        const macLine = asset.mac_address ? `<div class="meta">MAC: ${asset.mac_address} ${asset.mac_vendor ? '(' + asset.mac_vendor + ')' : ''}</div>` : '';
+        card.innerHTML = `
+          <h3>${asset.ip} ${asset.hostname ? '(' + asset.hostname + ')' : ''}</h3>
+          ${macLine}
+          <ul>
+            ${asset.services.map(service => `
+              <li>
+                <div class="service-line">
+                  <strong>${service.proto}/${service.port}</strong>
+                  <span>${service.product || 'unknown'} ${service.version || ''}</span>
+                </div>
+                ${service.vulnerabilities && service.vulnerabilities.length ? `
+                  <div class="vuln-list">
+                    ${service.vulnerabilities.map(vuln => `
+                      <span class="badge severity-${(vuln.severity || 'unknown').toLowerCase()}">${vuln.cve_id}${vuln.severity ? ' · ' + vuln.severity : ''}</span>
+                    `).join(' ')}
+                  </div>
+                ` : '<span class="badge severity-info">No CVEs linked</span>'}
+              </li>`).join('')}
+          </ul>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function fetchScans() {
+      const response = await fetch('/scans');
+      const container = document.getElementById('scans');
+      if (!response.ok) {
+        container.innerText = 'Unable to load scan history.';
+        return;
+      }
+      const scans = await response.json();
+      if (!scans.length) {
+        container.innerText = 'No scans stored yet.';
+        return;
+      }
+      container.innerHTML = '';
+      scans.forEach(scan => {
+        const card = document.createElement('article');
+        card.classList.add('scan-card');
+        card.innerHTML = `
+          <h3>${scan.asset_ip}</h3>
+          <div class="meta">Scan ${scan.scan_id || scan.id} via ${scan.scanner || 'unknown'} (${scan.mode || 'standard'})</div>
+          <div class="meta">${scan.started_at || 'unknown start'} → ${scan.completed_at || 'unknown finish'}</div>
+          <div class="meta">Services: ${scan.services.length}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function fetchMitre() {
+      const response = await fetch('/attack_suggestions');
+      const container = document.getElementById('mitre');
+      if (!response.ok) {
+        container.innerText = 'Unable to load ATT&CK guidance.';
+        return;
+      }
+      const suggestions = await response.json();
+      if (!suggestions.length) {
+        container.innerText = 'Suggestions populate after a scan.';
+        return;
+      }
+      container.innerHTML = '';
+      suggestions.forEach(suggestion => {
+        const card = document.createElement('article');
+        card.innerHTML = `
+          <h3>${suggestion.technique_id} · ${suggestion.name}</h3>
+          <p>${suggestion.description}</p>
+          <div class="meta">${suggestion.tactic} | Severity: ${suggestion.severity || 'info'}</div>
+          ${suggestion.related_cve ? `<div class="badge severity-critical">Linked CVE ${suggestion.related_cve}</div>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function refreshAll() {
+      fetchAssets();
+      fetchScans();
+      fetchMitre();
+      fetchTasks();
+    }
+
+    refreshAll();
+    setInterval(refreshAll, 15000);
+
+    async function fetchTasks() {
+      const response = await fetch('/tasks');
+      const container = document.getElementById('tasks');
+      if (!response.ok) {
+        container.innerText = 'Unable to load tasks.';
+        return;
+      }
+      const tasks = await response.json();
+      if (!tasks.length) {
+        container.innerText = 'Queue a task to populate this view.';
+        return;
+      }
+      container.innerHTML = '';
+      tasks.forEach(task => {
+        const card = document.createElement('article');
+        card.classList.add('task-card');
+        const params = JSON.stringify(task.params || {}, null, 2);
+        card.innerHTML = `
+          <div class="task-line">
+            <strong>${task.tool}</strong>
+            <span class="badge status-pill status-${task.status.toLowerCase()}">${task.status}</span>
+          </div>
+          <div class="meta">Target: ${task.target || 'n/a'}</div>
+          <div class="meta">Created: ${task.created_at}</div>
+          ${task.started_at ? `<div class="meta">Started: ${task.started_at}</div>` : ''}
+          ${task.finished_at ? `<div class="meta">Finished: ${task.finished_at}</div>` : ''}
+          <details>
+            <summary>Parameters</summary>
+            <pre>${params}</pre>
+          </details>
+          ${task.result ? `<details><summary>Result</summary><pre>${JSON.stringify(task.result, null, 2)}</pre></details>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function queueTask(payload, messageEl) {
+      try {
+        const response = await fetch('/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || 'Unable to queue task');
+        }
+        const data = await response.json();
+        messageEl.textContent = `Queued task #${data.id}`;
+        messageEl.classList.remove('error');
+        fetchTasks();
+      } catch (err) {
+        messageEl.textContent = err.message;
+        messageEl.classList.add('error');
+      }
+    }
+
+    const taskForm = document.getElementById('task-form');
+    if (taskForm) {
+      taskForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const toolInput = document.getElementById('task-tool');
+        const targetInput = document.getElementById('task-target');
+        const paramsInput = document.getElementById('task-params');
+        const messageEl = document.getElementById('task-message');
+        let params = {};
+        if (paramsInput.value.trim()) {
+          try {
+            params = JSON.parse(paramsInput.value);
+          } catch (err) {
+            messageEl.textContent = 'Params must be valid JSON.';
+            messageEl.classList.add('error');
+            return;
+          }
+        }
+        await queueTask({
+          tool: toolInput.value.trim(),
+          target: targetInput.value.trim() || null,
+          params
+        }, messageEl);
+        taskForm.reset();
+      });
+    }
+
+    const passwordForm = document.getElementById('password-form');
+    if (passwordForm) {
+      passwordForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const messageEl = document.getElementById('password-message');
+        const tool = document.getElementById('password-tool').value;
+        const target = document.getElementById('password-target').value;
+        const hashFile = document.getElementById('password-file').value;
+        const wordlist = document.getElementById('password-wordlist').value;
+        const extraField = document.getElementById('password-extra');
+        let extra = {};
+        if (extraField.value.trim()) {
+          try {
+            extra = JSON.parse(extraField.value);
+          } catch (err) {
+            messageEl.textContent = 'Extra options must be valid JSON.';
+            messageEl.classList.add('error');
+            return;
+          }
+        }
+        const params = {
+          crack_tool: tool,
+          ...extra
+        };
+        if (tool === 'rainbow') {
+          params.tables_path = hashFile;
+          if (wordlist) {
+            if (wordlist.includes('/') || wordlist.endsWith('.txt')) {
+              params.hash_file = wordlist;
+            } else {
+              params.hash_value = wordlist;
+            }
+          }
+        } else {
+          params.hash_file = hashFile;
+          if (wordlist) {
+            if (tool === 'hashcat' && wordlist.includes('?') && !wordlist.includes('/')) {
+              params.mask = wordlist;
+            } else {
+              params.wordlist = wordlist;
+            }
+          }
+        }
+        await queueTask({
+          tool: 'password_cracker',
+          target: target || hashFile,
+          params
+        }, messageEl);
+        passwordForm.reset();
+      });
+    }
+  </script>
+</body>
+</html>
