@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GooseStrike Mock Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="canadian-flag" role="img" aria-label="Canadian flag motif"></div>
+    <div>
+      <h1>GooseStrike Mock Dashboard</h1>
+      <p>Pre-filled sample data so you can preview the UI without running scans.</p>
+    </div>
+    <div class="goose-logo" role="img" aria-label="Uploaded GooseStrike logo">
+      <img src="{{ logo_url }}" alt="Uploaded GooseStrike logo" />
+    </div>
+  </header>
+
+  <main>
+    <section class="wide hero-panel" aria-label="Mock GooseStrike Core overview">
+      <div class="hero-text">
+        <h2>{{ mock.core_snapshot.title }}</h2>
+        <ul class="hero-list">
+          {% for bullet in mock.core_snapshot.bullets %}
+          <li>{{ bullet }}</li>
+          {% endfor %}
+        </ul>
+        <h3>Artifact drops</h3>
+        <ul class="hero-list">
+          {% for download in mock.core_snapshot.downloads %}
+          <li>{{ download }}</li>
+          {% endfor %}
+        </ul>
+        <div class="hero-meta">
+          <h3>Coming next (roadmap you requested)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in mock.roadmap %}
+              <tr>
+                <td>{{ item.task | safe }}</td>
+                <td>{{ item.status }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="hero-visual" role="img" aria-label="GooseStrike crest mockup">
+        <div class="hero-visual-inner">
+          <img src="{{ spotlight_logo_url }}" alt="GooseStrike crest" />
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Assets (Sample)</h2>
+      <div class="scan-list">
+        {% for asset in mock.assets %}
+        <article class="scan-card">
+          <h3>{{ asset.ip }}{% if asset.hostname %} · {{ asset.hostname }}{% endif %}</h3>
+          <p class="meta">MAC {{ asset.mac_address }} · {{ asset.mac_vendor }}</p>
+          <ul>
+            {% for service in asset.services %}
+            <li>
+              <strong>{{ service.port }}/{{ service.proto }}</strong>
+              <span>{{ service.product }} {{ service.version }}</span>
+              <div>
+                {% for vuln in service.vulnerabilities %}
+                <span class="severity-pill severity-{{ vuln.severity | lower if vuln.severity else 'unknown' }}">
+                  {{ vuln.cve_id }} ({{ vuln.severity or 'Unknown' }})
+                </span>
+                {% endfor %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section>
+      <h2>Scan History (Sample)</h2>
+      <div class="scan-list">
+        {% for scan in mock.scans %}
+        <article class="scan-card">
+          <h3>{{ scan.asset_ip }} · {{ scan.mode }} ({{ scan.scan_id }})</h3>
+          <p class="meta">{{ scan.started_at }} → {{ scan.completed_at }} · {{ scan.notes }}</p>
+          <ul>
+            {% for svc in scan.services %}
+            <li>
+              <strong>{{ svc.port }}/{{ svc.proto }}</strong> — {{ svc.product }} {{ svc.version }}
+              <div>
+                {% for cve in svc.cves %}
+                <span class="severity-pill severity-info">{{ cve }}</span>
+                {% endfor %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section>
+      <h2>MITRE ATT&CK Suggestions (Sample)</h2>
+      <div id="mitre">
+        {% for suggestion in mock.attack_suggestions %}
+        <article class="scan-card">
+          <h3>{{ suggestion.technique_id }} · {{ suggestion.name }}</h3>
+          <p class="meta">{{ suggestion.tactic }} · Related to {{ suggestion.related_cve }}</p>
+          <p>{{ suggestion.description }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section>
+      <h2>Task Queue (Sample)</h2>
+      <div id="tasks">
+        {% for task in mock.tasks %}
+        <article class="task-card">
+          <div class="task-line">
+            <strong>{{ task.tool }}</strong>
+            <span class="severity-pill status-{{ task.status }}">{{ task.status }}</span>
+          </div>
+          <p>{{ task.target }}</p>
+          <pre>{{ task.params | tojson(indent=2) }}</pre>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section>
+      <h2>Alerts (Sample)</h2>
+      <div id="alerts">
+        {% for alert in mock.alerts %}
+        <article class="scan-card">
+          <h3>{{ alert.source }}</h3>
+          <p class="meta">{{ alert.created_at }}</p>
+          <pre>{{ alert.payload | tojson(indent=2) }}</pre>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Mock data only — run the real dashboard at <code>/</code> once you have live scans.
+  </footer>
+</body>
+</html>

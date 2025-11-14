@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: goosestrike-api
+    command: ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes:
+      - ./db:/app/db
+      - ./logs:/app/logs
+      - ./web/static/uploads:/app/web/static/uploads
+    environment:
+      - GOOSESTRIKE_LOGO=${GOOSESTRIKE_LOGO:-}
+      - CLAUDE_API_URL=${CLAUDE_API_URL:-}
+      - HACKGPT_API_URL=${HACKGPT_API_URL:-http://hackgpt:8500/prompt}
+      - HACKGPT_API_KEY=${HACKGPT_API_KEY:-}
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - cve-api
+      - hackgpt
+
+  scanner:
+    build: .
+    container_name: goosestrike-scanner
+    command: ["sleep", "infinity"]
+    volumes:
+      - ./db:/app/db
+      - ./logs:/app/logs
+    depends_on:
+      - api
+
+  indexer:
+    build: .
+    container_name: goosestrike-indexer
+    command: ["sleep", "infinity"]
+    volumes:
+      - ./db:/app/db
+      - ./data:/app/data
+
+  task-runner:
+    build: .
+    container_name: goosestrike-task-runner
+    command: ["sleep", "infinity"]
+    volumes:
+      - ./db:/app/db
+      - ./logs:/app/logs
+
+  hackgpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: goosestrike-hackgpt
+    command: ["uvicorn", "hackgpt_api:app", "--host", "0.0.0.0", "--port", "8500"]
+    environment:
+      - N8N_WEBHOOK_URL=http://n8n:5678/webhook/hackgpt
+    ports:
+      - "8500:8500"
+
+  cve-api:
+    build: .
+    container_name: goosestrike-cve-api
+    command: ["uvicorn", "cve_api:app", "--host", "0.0.0.0", "--port", "8600"]
+    volumes:
+      - ./db:/app/db
+    ports:
+      - "8600:8600"
+
+  n8n:
+    image: n8nio/n8n:1.53.0
+    container_name: goosestrike-n8n
+    restart: unless-stopped
+    environment:
+      - GENERIC_TIMEZONE=UTC
+    ports:
+      - "5678:5678"
+    volumes:
+      - ./n8n-data:/home/node/.n8n

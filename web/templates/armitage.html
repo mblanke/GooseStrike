@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>GooseStrike Armitage View</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body class="armitage-body">
+    <header class="armitage-header">
+        <h1>GooseStrike – Armitage-style graph</h1>
+        <nav>
+            <a href="/">Dashboard</a>
+            <a href="/mockup">Mock data</a>
+        </nav>
+    </header>
+    <section class="armitage-canvas" id="armitage-canvas">
+        <svg id="edge-layer" class="armitage-edges" preserveAspectRatio="none"></svg>
+        <div id="armitage-nodes" class="armitage-nodes"></div>
+    </section>
+    <script>
+        const graph = {{ graph_json | safe }};
+        const canvas = document.getElementById('armitage-canvas');
+        const nodesLayer = document.getElementById('armitage-nodes');
+        const edgeLayer = document.getElementById('edge-layer');
+
+        function renderGraph() {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            edgeLayer.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            edgeLayer.setAttribute('width', width);
+            edgeLayer.setAttribute('height', height);
+            nodesLayer.innerHTML = '';
+            edgeLayer.innerHTML = '';
+            const radius = Math.min(width, height) / 2 - 80;
+            const positions = {};
+            graph.nodes.forEach((node, idx) => {
+                const angle = (idx / graph.nodes.length) * Math.PI * 2;
+                const cx = width / 2 + radius * Math.cos(angle);
+                const cy = height / 2 + radius * Math.sin(angle);
+                positions[node.id] = { x: cx, y: cy };
+                const el = document.createElement('div');
+                el.className = `armitage-node ${node.type}`;
+                el.style.left = `${cx}px`;
+                el.style.top = `${cy}px`;
+                el.textContent = node.label;
+                nodesLayer.appendChild(el);
+            });
+            graph.edges.forEach((edge) => {
+                const source = positions[edge.source];
+                const target = positions[edge.target];
+                if (!source || !target) {
+                    return;
+                }
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', source.x);
+                line.setAttribute('y1', source.y);
+                line.setAttribute('x2', target.x);
+                line.setAttribute('y2', target.y);
+                line.classList.add('armitage-edge');
+                edgeLayer.appendChild(line);
+            });
+        }
+
+        window.addEventListener('resize', () => requestAnimationFrame(renderGraph));
+        renderGraph();
+    </script>
+</body>
+</html>

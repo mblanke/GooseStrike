@@ -1,0 +1,37 @@
+<svg width="800" height="420" viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0b0b0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1f1f1f;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="420" fill="url(#grad)" rx="32" />
+  <text x="400" y="50" font-size="28" fill="#fff" text-anchor="middle">GooseStrike Flow</text>
+  <rect x="50" y="90" width="160" height="70" rx="14" fill="#b81b29" />
+  <text x="130" y="135" text-anchor="middle" fill="#fff" font-size="16">scanner.py</text>
+  <rect x="300" y="90" width="200" height="70" rx="14" fill="#d63b45" />
+  <text x="400" y="120" text-anchor="middle" fill="#fff" font-size="16">FastAPI / UI</text>
+  <text x="400" y="140" text-anchor="middle" fill="#fff" font-size="12">assets • scans • tasks</text>
+  <rect x="580" y="90" width="160" height="70" rx="14" fill="#f5a623" />
+  <text x="660" y="125" text-anchor="middle" fill="#111" font-size="16">Agents</text>
+  <rect x="50" y="230" width="200" height="70" rx="14" fill="#222" stroke="#fff" stroke-width="2" />
+  <text x="150" y="260" text-anchor="middle" fill="#fff" font-size="14">db/goosestrike.db</text>
+  <rect x="300" y="230" width="200" height="70" rx="14" fill="#333" stroke="#fff" stroke-width="2" />
+  <text x="400" y="250" text-anchor="middle" fill="#fff" font-size="14">db/exploits.db</text>
+  <text x="400" y="270" text-anchor="middle" fill="#fff" font-size="12">CVE API</text>
+  <rect x="580" y="230" width="160" height="70" rx="14" fill="#444" stroke="#fff" stroke-width="2" />
+  <text x="660" y="260" text-anchor="middle" fill="#fff" font-size="14">HackGPT Relay</text>
+  <rect x="300" y="330" width="200" height="60" rx="14" fill="#555" stroke="#fff" stroke-width="2" />
+  <text x="400" y="360" text-anchor="middle" fill="#fff" font-size="14">n8n workflows</text>
+  <line x1="210" y1="125" x2="300" y2="125" stroke="#fff" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="500" y1="125" x2="580" y2="125" stroke="#fff" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="400" y1="160" x2="400" y2="230" stroke="#fff" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="130" y1="160" x2="130" y2="230" stroke="#fff" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="660" y1="160" x2="660" y2="230" stroke="#fff" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="400" y1="300" x2="400" y2="330" stroke="#fff" stroke-width="2" marker-end="url(#arrow)" />
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#fff" />
+    </marker>
+  </defs>
+</svg>
